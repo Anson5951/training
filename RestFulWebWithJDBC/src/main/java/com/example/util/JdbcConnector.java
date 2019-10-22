@@ -26,33 +26,7 @@ public class JdbcConnector {
 			e.printStackTrace();
 		}
 	}
-/*
- * 	public Connection connection = null;
-
-	@Value("${remotedatabase.connect.hosts}")
-	private String hosts;
 	
-	@Value("${remotedatabase.connect.databasename}")
-	private String databaseName;
-	
-	@Value("${remotedatabase.connect.parameters}")
-	private String parameters;
-	
-	@Value("${remotedatabase.connect.username}")
-	private String username;
-	
-	@Value("${remotedatabase.connect.password}")
-	private String password;
-	
-
-	public JdbcConnector() {
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			String url = "jdbc:mysql://" + hosts + "/" + databaseName + "?" + parameters;
-			connection = DriverManager.getConnection(url, username, password);
-			System.out.println(connection.isValid(0));
-
- */
 	public Connection getConnection() {
 
 		return connection;
