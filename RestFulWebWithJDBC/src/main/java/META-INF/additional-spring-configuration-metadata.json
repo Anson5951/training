@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "remotedatabase",
+    "type": "java.lang.String",
+    "description": "a node that contains all information to connect to database on remotemysql.com"
+  },
+  {
+    "name": "remotedatabase.hosts",
+    "type": "java.lang.String",
+    "description": "the hosts name for connecting to remotemysql.com"
+  }
+]}

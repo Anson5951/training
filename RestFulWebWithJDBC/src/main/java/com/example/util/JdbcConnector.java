@@ -4,21 +4,18 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import javax.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-@Service
 public class JdbcConnector {
 
 	public Connection connection = null;
 	
-	public JdbcConnector() {
-		try {
+	public JdbcConnector(Properties properties) {
+			try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
-			String url = "jdbc:mysql://remotemysql.com:3306/DVph4FIxDe";
-			connection = DriverManager.getConnection(url, "DVph4FIxDe", "g2lCZx7Bo1");
+			String url = "jdbc:mysql://" + properties.getHosts() + ":" + properties.getPorts() + "/" + properties.getDatabaseName();
+			connection = DriverManager.getConnection(url, properties.getUserName(), properties.getPassword());
 			System.out.println("connection is valid : " + connection.isValid(0));
 
 		} catch (ClassNotFoundException | SQLException e) {

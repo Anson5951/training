@@ -6,18 +6,24 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.util.JdbcConnector;
+import com.example.util.Properties;
 import com.example.entity.ScoreSheet;
 
 @Service
 public class SqlService {
 
+	@Autowired
+	private Properties properties;
+	
 	public ArrayList<ScoreSheet> getAll() throws SQLException {
-		Connection connection = new JdbcConnector().getConnection();
+		
+		Connection connection = new JdbcConnector(properties).getConnection();
 		Statement statement = connection.createStatement();
-		String sql = "select * from movies";
+		String sql = "select * from movies order by id";
 		ResultSet resultSet = statement.executeQuery(sql);
 
 		ArrayList<ScoreSheet> resultList = new ArrayList<>();
@@ -37,9 +43,9 @@ public class SqlService {
 
 	public ArrayList<ScoreSheet> getScoreSheetByCondition(String condtionType, String value) throws SQLException{
 		
-		Connection connection = new JdbcConnector().getConnection();
+		Connection connection = new JdbcConnector(properties).getConnection();
 		Statement statement = connection.createStatement();
-		String sql = "select * from movies where " + condtionType + " = \"" + value + "\"";
+		String sql = "select * from movies where " + condtionType + " = \"" + value + "\"  order by id";
 		System.out.println("sql : " + sql);
 		ResultSet resultSet = statement.executeQuery(sql);
 		
@@ -58,7 +64,7 @@ public class SqlService {
 	
 	public boolean insert(int id, String name, String info, double score) throws SQLException {
 
-		Connection connection = new JdbcConnector().getConnection();
+		Connection connection = new JdbcConnector(properties).getConnection();
 		Statement statement = connection.createStatement();
 		String sql = "insert into movies(id, name, info, score) values(" + id + ",'" + name + "','" + info + "',"
 				+ score + ")";
@@ -73,7 +79,7 @@ public class SqlService {
 
 	public boolean update(int id, String name, String info, double score) throws SQLException {
 
-		Connection connection = new JdbcConnector().getConnection();
+		Connection connection = new JdbcConnector(properties).getConnection();
 		Statement statement = connection.createStatement();
 		String sql = "update movies set name = '" + name + "', info = '" + info + "', score = " + score + "where id = "
 				+ id;
@@ -88,7 +94,7 @@ public class SqlService {
 
 	public boolean delete(int id) throws SQLException {
 
-		Connection connection = new JdbcConnector().getConnection();
+		Connection connection = new JdbcConnector(properties).getConnection();
 		Statement statement = connection.createStatement();
 		String sql = "delete from movies where id = " + id;
 
@@ -101,7 +107,7 @@ public class SqlService {
 	}
 
 	public ScoreSheet getScoreSheetById(int id) throws SQLException {
-		Connection connection = new JdbcConnector().getConnection();
+		Connection connection = new JdbcConnector(properties).getConnection();
 		Statement statement = connection.createStatement();
 		String sql = "select * from movies where id = " + id;
 		ResultSet resultSet = statement.executeQuery(sql);
