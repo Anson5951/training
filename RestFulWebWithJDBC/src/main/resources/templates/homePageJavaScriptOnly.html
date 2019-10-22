@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<script type="text/javascript">
+	var url = "http://localhost:8080/scoreSheet/movies";
+
+	function getAllScoreSheet() {
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", url);
+		xhr.responseType = "json";
+		xhr.onload = function() {
+			if(xhr.status == 200){
+				var sheetBody = document.getElementById("sheetbody");
+				sheetBody.innerHTML = "";
+				var response = xhr.response;
+				for (index in response) {
+					console.log(index + " : " + response[index]);
+					itemToTableRow(response[index]);
+				}
+			}
+		};
+		xhr.onerror = function() {
+			alert("獲取資料失敗 : " + xhr.response);
+			console.log(xhr.response);
+			console.log(xhr);
+		}
+		xhr.send();
+	}
+
+	function itemToTableRow(item) {
+		var sheetBody = document.getElementById("sheetbody");
+		var tr = document.createElement("tr");
+		var idTd = document.createElement("td");
+		var nameTd = document.createElement("td");
+		var infoTd = document.createElement("td");
+		var scoreTd = document.createElement("td");
+		var buttonTd = document.createElement("td");
+
+		var deleteButton = document.createElement("button");
+		var editButton = document.createElement("button");
+
+		idTd.appendChild(document.createTextNode(item.id));
+		nameTd.appendChild(document.createTextNode(item.name));
+		infoTd.appendChild(document.createTextNode(item.info));
+		scoreTd.appendChild(document.createTextNode(item.score));
+		deleteButton.appendChild(document.createTextNode("刪除"));
+		editButton.appendChild(document.createTextNode("編輯"));
+
+		deleteButton.setAttribute("onclick", "deleteMovie(" + item.id + ")");
+		editButton.setAttribute("onclick", "openEditTable(" + item.id + ")");
+
+		buttonTd.appendChild(deleteButton);
+		buttonTd.appendChild(editButton);
+
+		tr.appendChild(idTd);
+		tr.appendChild(nameTd);
+		tr.appendChild(infoTd);
+		tr.appendChild(scoreTd);
+		tr.appendChild(buttonTd);
+
+		sheetBody.appendChild(tr);
+	}
+	
+	function createMovie() {
+		event.preventDefault();
+		console.log("creating");
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", url);
+		
+		xhr.onreadystatechange = function(){
+			if(xhr.readyState == XMLHttpRequest.DONE){
+				if(xhr.status == 200){
+					
+					alert("新增成功");
+					console.log(xhr);
+					getAllScoreSheet();
+				}else{
+					alert("新增失敗");
+					console.log(xhr);
+				}
+			}
+		}
+
+		var formData = new FormData();
+		formData.append("id", document.getElementById("createId").value);
+		formData.append("name", document.getElementById("createName").value);
+		formData.append("info", document.getElementById("createInfo").value);
+		formData.append("score", document.getElementById("createScore").value);
+		xhr.send(formData);
+	}
+
+	function deleteMovie(id) {
+		var conf = confirm("確定要刪除嗎?");
+		if (conf) {
+			var xhr = new XMLHttpRequest();
+			xhr.open("DELETE", url);
+			
+			xhr.onreadystatechange = function(){
+				if(xhr.readyState === XMLHttpRequest.DONE){
+					if(xhr.status == 200){
+						alert("刪除成功");
+						getAllScoreSheet();
+					}
+					else{
+						alert("刪除失敗 : " + xhr.response);
+						console.log(xhr);
+					}
+				}
+			}
+			var formData = new FormData();
+			formData.append("id", id);
+			
+			xhr.send(formData);
+		}
+	}
+
+	function editMovie() {
+		event.preventDefault();
+		console.log("editting");
+		
+		var xhr = new XMLHttpRequest();
+		xhr.open("PUT", url);
+		xhr.overrideMimeType("text/plain");
+		xhr.onreadystatechange = function(){
+			if(xhr.readyState == XMLHttpRequest.DONE){
+				if(xhr.status == 200){
+					alert("編輯成功");
+					getAllScoreSheet();
+				}
+				else{
+					alert("編輯失敗");
+					console.log(xhr);
+				}
+			}
+		}
+		
+		var formData = new FormData();
+		formData.append("id",document.getElementById("editId").value);
+		formData.append("name",document.getElementById("editName").value);
+		formData.append("info",document.getElementById("editInfo").value);
+		formData.append("score",document.getElementById("editScore").value);
+		xhr.send(formData);
+	}
+	
+	function searchMovies() {
+		event.preventDefault();
+		
+		var xhr = new XMLHttpRequest();
+		xhr.responseType = "json";
+		xhr.onreadystatechange = function(){
+			if(xhr.readyState == XMLHttpRequest.DONE){
+				if(xhr.status == 200){
+					console.log("good");
+					var response = xhr.response;
+					console.log(response);
+					if(response.length > 0){
+						document.getElementById("sheetbody").innerHTML = "";
+						for(index in response){
+							console.log(response[index]);
+							itemToTableRow(response[index]);	
+						}
+					}
+					else{
+						alert("查詢無結果");
+						console.log(xhr);
+					}
+				}
+				else{
+					alert("查詢錯誤");
+					console.log(xhr);
+				}
+			}
+		}
+
+		var param = "conditiontype=" + document.getElementById("searchCondition").value 
+						+ "&value=" + document.getElementById("searchValue").value;
+		console.log(param);
+		xhr.open("GET", url + "/search?" + param);
+		xhr.send();
+	}
+
+	function openEditTable(id) {
+		var xhr = new XMLHttpRequest();
+		
+		xhr.open("GET", url + "/" + id);
+		xhr.responseType = "json";
+		xhr.onreadystatechange = function(){
+			if(xhr.readyState == XMLHttpRequest.DONE){
+				if(xhr.status == 200){
+					console.log("get value success");
+					
+					var response = xhr.response;
+					console.log(xhr);
+					console.log(response);
+					editTableFadeToggle();
+					document.getElementById("editId").value = response.id;
+					document.getElementById("editName").value = response.name;
+					document.getElementById("editInfo").value = response.info;
+					document.getElementById("editScore").value = response.score;
+				}
+				else{
+					alert("編輯失敗");
+					console.log(xhr);
+				}
+			}
+		}
+		
+		xhr.send();
+	}
+
+
+	function createTableFadeToggle() {
+		var createTable = document.getElementById("createTable");
+		var editTable = document.getElementById("editTable");
+		var searchTable = document.getElementById("searchTable");
+
+		if(createTable.getAttribute("hidden") != null){
+			createTable.removeAttribute("hidden");	
+		}
+		else{
+			createTable.setAttribute("hidden", "true");
+		}
+		searchTable.setAttribute("hidden", "true");
+		editTable.setAttribute("hidden", "true");
+	}
+
+	function editTableFadeToggle() {
+		var createTable = document.getElementById("createTable");
+		var editTable = document.getElementById("editTable");
+		var searchTable = document.getElementById("searchTable");
+		
+		editTable.removeAttribute("hidden");
+		createTable.setAttribute("hidden", "true");
+		searchTable.setAttribute("hidden", "true");
+	}
+
+	function searchTableFadeToggle() {
+		var createTable = document.getElementById("createTable");
+		var editTable = document.getElementById("editTable");
+		var searchTable = document.getElementById("searchTable");
+		
+		searchTable.removeAttribute("hidden");
+		createTable.setAttribute("hidden", "true");
+		editTable.setAttribute("hidden", "true");
+	}
+</script>
+<title>MovieScore Sheet</title>
+</head>
+<body onload="getAllScoreSheet()">
+	<p id="output"></p>
+	<button onclick="createTableFadeToggle()">新增</button>
+	<button onclick="searchTableFadeToggle()">搜尋</button>
+	<button onclick="getAllScoreSheet()">顯示全部</button>
+	
+	<form id="createTable" onsubmit="createMovie()" hidden="true">
+		編號 : <input type="text" id="createId"><br> 
+		名稱 : <input type="text" id="createName"><br> 
+		說明 : <input type="text" id="createInfo"><br> 
+		分數 : <input type="text" id="createScore"><br> 
+		<input type="submit" value="送出" onclick="createTableFadeToggle()">
+	</form>
+	
+	<form id="editTable" onsubmit="editMovie()" hidden="true">
+		編號 : <input type="text" id="editId" readonly><br> 
+		名稱 : <input type="text" id="editName"><br> 
+		說明 : <input type="text" id="editInfo"><br> 
+		分數 : <input type="text" id="editScore"><br> 
+		<input type="submit" value="送出"  onclick="editTableFadeToggle()">
+	</form>
+	
+	<div id="searchTable" hidden="true">
+		<select id="searchCondition">
+			<option value="id">編號</option>
+			<option value="name">名稱</option>
+		</select>
+		<form onsubmit="searchMovies()">
+			<input type="text" id="searchValue"> 
+			<input type="submit" value="搜尋" onclick="searchTableFadeToggle()">
+		</form>
+	</div>
+	
+	<table id="sheet" border="1">
+		<thead>
+			<tr>
+				<td>編號</td>
+				<td>名稱</td>
+				<td>說明</td>
+				<td>分數</td>
+				<td>功能</td>
+			</tr>
+		</thead>
+		<tbody id="sheetbody">
+		</tbody>
+	</table>
+</body>
+</html>
