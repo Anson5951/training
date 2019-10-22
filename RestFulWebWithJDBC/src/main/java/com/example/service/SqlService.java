@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 import org.springframework.stereotype.Service;
 
-import com.example.dao.JdbcConnector;
+import com.example.util.JdbcConnector;
 import com.example.entity.ScoreSheet;
 
 @Service
