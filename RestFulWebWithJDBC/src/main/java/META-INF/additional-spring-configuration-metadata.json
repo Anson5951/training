@@ -8,5 +8,15 @@
     "name": "remotedatabase.hosts",
     "type": "java.lang.String",
     "description": "the hosts name for connecting to remotemysql.com"
+  },
+  {
+    "name": "remotedatabase2",
+    "type": "java.lang.String",
+    "description": "A description for 'remotedatabase2'"
+  },
+  {
+    "name": "remotedatabase2.hosts",
+    "type": "java.lang.String",
+    "description": "the hosts name for connecting to remotemysql.com"
   }
 ]}

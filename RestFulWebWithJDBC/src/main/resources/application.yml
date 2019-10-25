@@ -4,3 +4,9 @@ remotedatabase:
   databasename: DVph4FIxDe
   username: DVph4FIxDe
   password: g2lCZx7Bo1
+remotedatabase2:
+  hosts: remotemysql.com
+  ports: 3306
+  databasename: cq5P7E2pzS
+  username: cq5P7E2pzS
+  password: v2pRxFPlRp
